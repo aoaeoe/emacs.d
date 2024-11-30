@@ -2,7 +2,7 @@
 
 It requires Emacs version 29 or higher. If needed, you can change the MELPA repository source.
 
-Some shortcuts can be customized, such as `neotree` with `C-c C-t`.
+Some shortcuts can be customized, such as `neotree` with `C-c C-t`. If you need it, you should install all-the-icons-fonts. You can also choose treemacs.
 
 I hope it is a lightweight editor.
 
