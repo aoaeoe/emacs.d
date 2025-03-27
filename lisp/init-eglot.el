@@ -66,7 +66,7 @@ eg.from datetime import datetime."
 (use-package rust-mode
   :config
   (setq rust-format-on-save t)
-  (setq rustic-analyzer-command '("/Users/evims/.cargo/bin/rust-analyzer"))
+  (setq rustic-analyzer-command '("/home/evims/.cargo/bin/rust-analyzer"))
   (define-key rust-mode-map (kbd "C-c C-c") 'rust-run))
 
 (use-package quickrun)
