@@ -1,0 +1,30 @@
+# -*- mode: snippet -*-
+# name: elispconf
+# uuid: elispconf
+# key: elispconf
+# condition: t
+# --
+
+* `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+
+$0
+
+** Ends
+#+begin_src emacs-lisp
+  (provide '`(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; `(file-name-sans-extension (file-name-nondirectory (buffer-file-name)))`.el ends here
+#+end_src
+

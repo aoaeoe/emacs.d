@@ -1,0 +1,268 @@
+* init-vertico.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init-vertico.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; init-vertico.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+
+** Vertico
+=vertico= 提供了一个垂直样式的补全系统。
+#+begin_src emacs-lisp
+  ;; Enable vertico
+  (use-package vertico
+    :ensure t
+    :hook (after-init . vertico-mode)
+    :bind
+    (:map vertico-map
+          ("<tab>" . vertico-insert)    ; Choose selected candidate
+          ("<escape>" . vertico-exit) ; Close minibuffer
+          ("DEL" . 'vertico-directory-delete-char)
+          ;; NOTE 2022-02-05: Cycle through candidate groups
+          ;;("C-M-n" . vertico-next-group)
+          ;;("C-M-p" . vertico-previous-group)
+          )
+    ;;(map! :map vertico-map "DEl" #'vertico-directory-delete-char)
+    :custom
+    (vertico-count 15)  ; Number of candidates to display
+    (vertico-resize nil)
+    ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+    (vertico-cycle t)
+    ;; Go from last to first candidate and first to last (cycle)?
+    :config
+    (vertico-mode t)
+    ;; Different scroll margin
+    ;; (setq vertico-scroll-margin 0)
+    :custom-face
+    ;; hightlight the current option
+    (vertico-current ((t (:background "#4a3f5a"))))
+    )
+
+  ;; 检查变量，支持childframe则使用vertico-posframe
+  (when (leesin/childframe-completion-workable-p)
+    (use-package vertico-posframe
+      :ensure t
+      :hook (vertico-mode . vertico-posframe-mode)
+      :init (setq vertico-posframe-poshandler #'posframe-poshandler-frame-center
+                  vertico-posframe-parameters
+                  '((left-fringe . 8)
+                    (right-fringe . 8)))))
+#+end_src
+
+** Emacs Settings
+根据 =vertico= 的指南，在下面作如下配置。特别地，该配置的作用域应该在 =vertico= 处。
+#+begin_src emacs-lisp
+  ;; A few more useful configurations
+  (use-package emacs
+    :ensure t
+    :init
+    ;; Add prompt indicator to `completing-read-multiple'.
+    ;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
+    (defun crm-indicator (args)
+      (cons (format "[CRM%s] %s"
+                    (replace-regexp-in-string
+                     "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                     crm-separator)
+                    (car args))
+            (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+    ;; Do not allow the cursor in the minibuffer prompt
+    (setq minibuffer-prompt-properties
+          '(read-only t cursor-intangible t face minibuffer-prompt))
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+    ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+    ;; Vertico commands are hidden in normal buffers.
+    ;; (setq read-extended-command-predicate
+    ;;       #'command-completion-default-include-p)
+
+    ;; Enable recursive minibuffers
+    (setq enable-recursive-minibuffers t)
+    )
+#+end_src
+
+** Orderless
+先安装一个支持中文的首字母匹配的插件 =pinyin-search= ( =pinyinlib= is deprecated)。
+#+begin_src emacs-lisp
+  (use-package pinyin-isearch
+    :ensure t)
+#+end_src
+再安装 =orderless= ，用于无序补全。
+#+begin_src emacs-lisp
+  ;; Fuzzy find orders
+  (use-package orderless
+    :ensure t
+    :init
+    ;; & is for company because space will break completion
+    (setq completion-styles '(orderless partial-completion basic)
+          orderless-component-separator "[ &]" 
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles partial-completion))))
+    :config
+    ;; make completion support pinyin
+    ;; refer to https://emacs-china.org/t/vertico/17913/2
+    ;;(defun completion-regex-pinyin (str)
+    ;;  (orderless-regexp (pinyinlib-build-regexp-string str)))
+    ;;(add-to-list 'orderless-matching-styles 'completion-regex-pinyin)
+    )
+#+end_src
+
+** Marginalia
+为迷你缓冲区的补全候选条目添加提示信息。
+#+begin_src emacs-lisp
+  ;; Display the purpose and comment of each command in minibuffer
+  (use-package marginalia
+    :ensure t
+    :hook
+    (after-init . marginalia-mode)
+    :config
+    (marginalia-mode t)
+    )
+#+end_src
+
+** Consult
+#+begin_src emacs-lisp
+  (use-package consult
+    :ensure t
+    :after
+    (vertico)
+    :bind 
+    (([remap goto-line]                     . consult-goto-line)
+     ([remap isearch-forward]               . consult-line-symbol-at-point)
+     ; my-consult-ripgrep-or-line
+     ([remap switch-to-buffer]              . consult-buffer)
+     ([remap switch-to-buffer-other-window] . consult-buffer-other-window)
+     ([remap switch-to-buffer-other-frame]  . consult-buffer-other-frame)
+     ([remap yank-pop]                      . consult-yank-pop)
+     ([remap apropos]                       . consult-apropos)
+     ([remap bookmark-jump]                 . consult-bookmark)
+     ([remap goto-line]                     . consult-goto-line)
+     ([remap imenu]                         . consult-imenu)
+     ([remap multi-occur]                   . consult-multi-occur)
+     ([remap recentf-open-files]            . consult-recent-file)
+     ("C-x j"                               . consult-mark)
+     ("C-c g"                               . consult-ripgrep)
+     ("C-c f"                               . consult-find)
+     ;;("\e\ef"                               . consult-locate)
+     ; need to enable locate first
+     ("C-c n h"                             . leesin/consult-find-org-headings)
+     ;;:map org-mode-map
+     ;;("C-c C-j"                             . consult-org-heading)
+     :map minibuffer-local-map
+     ("C-r"                                 . consult-history)
+     :map isearch-mode-map
+     ("C-;"                                 . consult-line)
+     :map prog-mode-map
+     ("C-c C-j"                             . consult-outline)
+     )
+    :hook
+    (completion-list-mode . consult-preview-at-point-mode)
+    :init
+    ;; Optionally configure the register formatting. This improves the register
+    ;; preview for `consult-register', `consult-register-load',
+    ;; `consult-register-store' and the Emacs built-ins.
+    (setq register-preview-delay 0
+          register-preview-function #'consult-register-window)
+
+    ;; Optionally tweak the register preview window.
+    ;; This adds thin lines, sorting and hides the mode line of the window.
+    (advice-add #'register-preview :override #'consult-register-window)
+
+    ;; Use Consult to select xref locations with preview
+    (setq xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref)
+
+    ;; search all org file headings under a directory, see:
+    ;; https://emacs-china.org/t/org-files-heading-entry/20830/4
+    (defun leesin/consult-find-org-headings (&optional match)
+      "find headngs in all org files."
+      (interactive)
+      (consult-org-heading match (directory-files org-directory t "^[0-9]\\{8\\}.+\\.org$")))
+
+    ;; Use `consult-ripgrep' instead of `consult-line' in large buffers
+    (defun consult-line-symbol-at-point ()
+      "Consult line the synbol where the point is"
+      (interactive)
+      (consult-line (thing-at-point 'symbol)))
+    )
+#+end_src
+
+** Color-rg
+本插件用于进行搜索和重构。
+克隆地址 ~git clone https://github.com/manateelazycat/color-rg~
+我个人非常推荐 =color-rg= ，但是如果想在 =windows= 下使用的话需要注意单引号的问题，因为单引号并不是 Windows 系统中合法的路径引用符号。
+目前暂定的解决方案是取消任何有关单引号的参数，见下面的配置。
+
+*** V1
+使用默认的 =require= 加载。
+#+begin_src emacs-lisp :tangle no
+  (add-to-list 'load-path "~/.emacs.d/elpa/color-rg")
+  (require 'color-rg)
+  (when sys/win32p
+    (setq color-rg-search-ignore-rules nil))
+#+end_src
+
+*** V2
+使用 =use-package= 管理，引入了加载路径。
+#+begin_src emacs-lisp :tangle no
+  (use-package color-rg
+    ;:load-path "~/.emacs.d/elpa/color-rg"
+    :load-path (lambda() (expand-file-name "color-rg" package-user-dir))
+    :config
+    (when sys/win32p
+      (setq color-rg-search-ignore-rules nil))
+    )
+#+end_src
+
+*** V3
+以上方法不利于迁移和自动构建，现在改为使用 =quelpa= 加载。
+#+begin_src emacs-lisp
+  (use-package color-rg
+    :quelpa (color-rg
+       :fetcher github
+       :repo "manateelazycat/color-rg")
+    :ensure t
+    :after vertico
+    :config
+    (when sys/win32p
+      (setq color-rg-search-ignore-rules nil))
+  )
+#+end_src
+*** Note
+我个人曾经将 =color-rg= 中项目查找部分的源代码作了修改，因为我以前不喜欢 =project= 管理项目，见下面的配置。下面的代码不会直接参与编译，建议手动修改源码。
+#+begin_src emacs-lisp :tangle no
+(defun color-rg-project-root-dir ()
+  "Return root directory of the current project, or default-directory if none is found."
+  (let ((project (project-current)))
+    (if project
+        (expand-file-name
+         (cond
+          ((fboundp 'project-root) (project-root project))
+          ((fboundp 'project-roots) (car (project-roots project)))))
+      (read-directory-name "Enter a directory: " default-directory))))
+#+end_src
+
+** Savehist
+#+begin_src emacs-lisp
+  ;; Persist history over Emacs restarts. Vertico sorts by history position.
+  (use-package savehist
+    :ensure t
+    :config
+    (setq histroy-length 25)
+    (savehist-mode 1))
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'init-vertico)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-vertico.el ends here
+#+end_src
+

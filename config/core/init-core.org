@@ -1,0 +1,104 @@
+* init-core.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init-core.el") :lexical t
+:END:
+
+由本核心加载各配置模块。
+** Headers
+#+begin_src emacs-lisp
+  ;;; init-core.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+** Const & Self Defination
+先加载常量配置，再加载配置文件，最后加载个人定义的实用函数配置。
+在实用函数配置中加载相关的个人自定义配置。
+#+begin_src emacs-lisp
+  ;; Const variable
+  (require 'init-const)
+  (require 'init-custom)
+  ;; Self function
+  (require 'init-function)
+#+end_src
+
+** Package
+#+begin_src emacs-lisp
+  (require 'init-package)
+#+end_src
+
+** Edit Tool & Search Engine
+#+begin_src emacs-lisp
+  ;; Edit Mode
+  (require 'init-evil)
+  (require 'init-editor)
+  ;; Search engine
+  ;; (require 'init-ivy)
+  (require 'init-vertico)
+    
+#+end_src
+
+** Appearance
+搜素引擎插件本身应该在外观之前加载，它的图标支持依赖的是独立的包 =all-the-icons-completion=
+该包依赖于 =all-the-icons= ，加载时令其在 =vertico= 之后加载。
+#+begin_src emacs-lisp
+  (require 'init-ui)
+  (require 'init-dashboard)
+  (require 'init-modeline)
+#+end_src
+
+** Language Support
+
+#+begin_src emacs-lisp
+  ;;(defun load-language-part-file()
+  ;; Complete Frame
+  (require 'init-complete)
+  ;; Language support
+  (require 'init-lang)
+  ;;)
+#+end_src
+
+** Function
+#+begin_src emacs-lisp
+  (defun load-function-part-file()
+    ;; Sidebar
+    (require 'init-sidebar)
+    ;; Term
+    (require 'init-term)
+  )
+#+end_src
+
+** Other Part
+#+begin_src emacs-lisp
+  ;; delay load
+  (defun load-other-part-file()
+    ;; Org Mode
+    (require 'init-org)
+    ;; Input Method
+    (require 'init-input)
+    ;; Key bindings
+    (require 'init-kbd)
+  )
+#+end_src
+
+** Delay Load Part
+延迟加载，提高加载速度。
+#+begin_src emacs-lisp
+  ;;(add-hook 'after-init-hook #'load-language-part-file)
+  (add-hook 'after-init-hook #'load-function-part-file)
+  (add-hook 'after-init-hook #'load-other-part-file)
+  ;; (run-with-idle-timer 2 nil #'load-language-part-file)
+  ;; (run-with-idle-timer 2 nil #'load-function-part-file)
+  ;; (run-with-idle-timer 3 nil #'load-other-part-file)
+
+  ;; (add-hook 'after-init-hook #'load-language)
+  ;; (add-hook 'after-init-hook #'load-custom-file)
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'init-core)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-core.el ends here
+#+end_src

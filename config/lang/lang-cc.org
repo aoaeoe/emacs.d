@@ -1,0 +1,47 @@
+* lang-cc.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "lang-cc.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; lang-cc.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+** Conf
+#+begin_src emacs-lisp
+  (use-package cc-mode
+    :ensure t
+    :hook
+    (cc-mode . (lambda () (setq tab-width 4)))
+    :config
+    (setq c-basic-offset 4) 
+    )
+
+  (use-package cmake-mode
+    :ensure t
+    :hook
+    (cmake-mode . (lambda () (setq tab-width 4)))
+    )
+#+end_src
+
+** Language server
+#+begin_src emacs-lisp
+  ;; Set clangd as the default C/C++ LSP
+  ;;(setq lsp-clients-clangd-args '("-j=3"
+  ;;                                "--background-index"
+  ;;                                "--clang-tidy"
+  ;;                                "--completion-style=detailed"
+  ;;                                "--header-insertion=never"
+  ;;                                "--header-insertion-decorators=0"))
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'lang-cc)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; lang-cc.el ends here
+#+end_src

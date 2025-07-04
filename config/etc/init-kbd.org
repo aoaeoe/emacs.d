@@ -1,0 +1,31 @@
+* init-kbd.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init-kbd.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; init-kbd.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+  #+end_src
+
+** Which key
+#+begin_src emacs-lisp
+  (use-package which-key
+    :ensure t
+    :init (which-key-mode)
+    :diminish which-key-mode
+    :config
+    (setq which-key-idle-delay 0.3))
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'init-kbd)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-kbd.el ends here
+#+end_src
+

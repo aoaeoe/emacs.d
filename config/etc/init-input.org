@@ -1,0 +1,51 @@
+* init-input.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init-input.el") :lexical t
+:END:
+
+** Headers
+是否启用输入法模块需要判断操作系统类型。
+#+begin_src emacs-lisp
+  ;;; init-input.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+  (require 'init-const)
+#+end_src
+
+** Fcitx
+#+begin_src emacs-lisp
+  (when sys/linux
+    (use-package fcitx
+      :ensure t
+      :defer 3
+      :config
+      (setq fcitx-use-dbus nil
+            fcitx-remote-command "fcitx5-remote")
+      (fcitx-aggressive-setup))
+  )
+#+end_src
+
+** Pangu spacing
+用于在中英文分界处自动插入空格。
+#+begin_src emacs-lisp
+  (use-package pangu-spacing
+    :ensure t
+    :defer 3
+    ;:hook (text-mode . pangu-spacing-mode)
+    :config
+    (global-pangu-spacing-mode 1)
+    ;; Always insert `real' space in org-mode.
+    (add-hook 'org-mode-hook
+              #'(lambda ()
+                 (set (make-local-variable 'pangu-spacing-real-insert-separtor) t))))
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'init-input)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-input.el ends here
+#+end_src
+

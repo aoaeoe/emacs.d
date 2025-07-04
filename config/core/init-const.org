@@ -1,0 +1,43 @@
+* init-const.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init-const.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; init-const.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+
+** Judge Operating System
+#+begin_src emacs-lisp
+  ;; Judge Operation System
+  (defconst sys/win32p
+     (memq system-type '(cygwin windows-nt ms-dos))
+     "We are running on a WinNT system.")
+
+  (defconst sys/linux
+     (eq system-type 'gnu/linux)
+     "We are running on a GNU/Linux system.")
+
+  (defconst sys/mac
+     (eq system-type 'darwin)
+     "We are running on a MacOS system.")
+#+end_src
+
+** Emacs version check
+#+begin_src emacs-lisp
+  (defconst emacs/>=28p
+    (>= emacs-major-version 28)
+    "Emacs is 28 or above.")
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'init-const)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-const.el ends here
+#+end_src

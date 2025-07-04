@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: ncurses
+# key: trigger-key
+# condition: t
+# --
+cmake_minimum_required(VERSION 3.21)
+project($1)
+set(CMAKE_CXX_FLAGS "-Wall -g")
+find_package(Curses REQUIRED)
+include_directories(\${CURSES_INCLUDE_DIRS})
+link_directories(\${CURSES_LIBRARIES})
+set(SRC_LIST src/$2)
+add_executable($3 ${SRC_LIST})
+target_link_libraries($3 \${CURSES_LIBRARIES})
+$0

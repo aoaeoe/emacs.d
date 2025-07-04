@@ -1,0 +1,31 @@
+* lang-nix.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "lang-nix.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; lang-nix.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+  #+end_src
+
+** Nix
+#+begin_src emacs-lisp
+  (use-package nix-mode
+    :ensure t
+    :mode ("\\.nix\\'" . nix-mode)
+    :hook
+    (nix-mode . (lambda () (setq tab-width 2)))
+    )
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'lang-nix)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; lang-nix.el ends here
+  #+end_src
+

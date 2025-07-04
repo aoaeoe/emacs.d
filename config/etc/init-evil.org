@@ -1,0 +1,77 @@
+* init-evil.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init-evil.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; init-evil.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+
+** Evil
+*** Install
+可以使用 =use-package= 安装。下面的代码参与编译。
+#+begin_src emacs-lisp
+  ;; Set variable before evil due to evil-collection issue 60
+  (setq evil-want-integration t
+        evil-want-keybinding nil)
+
+  (use-package evil
+    :ensure t
+    :init
+    (require 'evil)
+    :hook
+    (after-init . evil-mode)
+  )
+#+end_src
+
+也可以使用 =package.el= 安装。下面的代码不会参与编译。
+#+begin_src emacs-lisp :tangle no
+  (unless (package-installed-p 'evil)
+    (package-install 'evil))
+#+end_src
+
+*** Load
+由于使用 =use-package= ，下面的代码不会参与编译。
+#+begin_src emacs-lisp :tangle no
+  (require 'evil)
+  (evil-mode 1)
+
+  ;; Define Org Mode Keys
+  ;(evil-declare-key 'normal org-mode-map
+  ;  "gh" 'outline-up-heading
+  ;  "$" 'org-end-of-line ; smarter behavior on headlines etc.
+  ;  "^" 'org-beginning-of-line ; ditto
+  ;  ;;"<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
+  ;  ;;">" 'org-demote-or-promote ; indent
+  ;  (kbd "TAB") 'org-cycle)
+
+  ;; metaright and metaleft
+  ;(evil-declare-key 'insert org-mode-map
+    ;(kbd "TAB") 'org-do-demote 
+    ;(kbd "<backtab>") 'org-do-promote)
+#+end_src
+
+** Evil-collection
+使用 =evil-collection= 为其他常用 emacs 插件提供 =evil= 绑定。
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :ensure t
+    :after evil
+    :hook
+    (magit-mode . evil-collection-magit-init)
+    (evil-mode . evil-collection-init)
+    )
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'init-evil)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-evil.el ends here
+#+end_src
+

@@ -1,0 +1,133 @@
+* init-editor.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init-editor.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; init-editor.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+** Indent Tab Mode
+在某些模式下开启 ~indent-tabs-mode~ ，它们将在 =init-function.el= 中改变 =tab= 的逻辑。
+#+begin_src emacs-lisp
+  (defvar leesin/indent-tabs-modes-list
+    '(makefile-gmake-mode
+      makefile-mode
+      )
+    )
+
+  (defun leesin/toggle-indent-tabs-mode ()
+    (if (member major-mode leesin/indent-tabs-modes-list)
+        (setq indent-tabs-mode t)
+      (setq indent-tabs-mode nil)))
+
+  (add-hook 'after-change-major-mode-hook 'leesin/toggle-indent-tabs-mode)
+#+end_src
+
+** Indent Line
+缩进线高亮显示。
+项目地址：https://github.com/DarthFennec/highlight-indent-guides.git
+注意：提供显示缩进线的方式包括 =fill= =column= =character= =bitmap= 四种，其中 =character= 建议修改字符，因为原字符会导致缩进问题。
+#+begin_src emacs-lisp :tangle no
+  (use-package highlight-indent-guides
+    :load-path (lambda() (expand-file-name "highlight-indent-guides" package-user-dir))
+    :hook
+    (prog-mode . highlight-indent-guides-mode)
+    :config
+    (setq highlight-indent-guides-method 'character)
+    (setq highlight-indent-guides-character ?|)
+    (setq highlight-indent-guides-auto-enabled nil)
+    ;;(setq highlight-indent-guides-auto-odd-face-perc 40)
+    ;;(setq highlight-indent-guides-auto-even-face-perc 40)
+    ;;(setq highlight-indent-guides-auto-character-face-perc 100)
+    (set-face-foreground 'highlight-indent-guides-odd-face "darkgray")
+    (set-face-foreground 'highlight-indent-guides-even-face "dimgray")
+    (set-face-foreground 'highlight-indent-guides-character-face "dimgray")
+    )
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+    :quelpa (highlight-indent-guides
+       :fetcher github
+       :repo "DarthFennec/highlight-indent-guides")
+    :hook
+    (prog-mode . highlight-indent-guides-mode)
+    :config
+    (setq highlight-indent-guides-method 'character)
+    (setq highlight-indent-guides-character ?|)
+    (setq highlight-indent-guides-auto-enabled nil)
+    ;;(setq highlight-indent-guides-auto-odd-face-perc 40)
+    ;;(setq highlight-indent-guides-auto-even-face-perc 40)
+    ;;(setq highlight-indent-guides-auto-character-face-perc 100)
+    (set-face-foreground 'highlight-indent-guides-odd-face "darkgray")
+    (set-face-foreground 'highlight-indent-guides-even-face "dimgray")
+    (set-face-foreground 'highlight-indent-guides-character-face "dimgray")
+  )
+
+#+end_src
+
+** Beacon
+#+begin_src emacs-lisp
+  (use-package beacon
+    :ensure t
+    :hook
+    (after-init . beacon-mode)
+    )
+#+end_src
+
+** Line Number
+该块代码尚需优化，参考 =doom-emacs= 实现。
+#+begin_src emacs-lisp
+  ;; Show line number
+  ;;(setq display-line-numbers-type 't)
+  ;;(setq display-line-numbers 'absolute)
+  (use-package display-line-numbers
+    :ensure t
+    :hook ((prog-mode yaml-mode conf-mode org-mode) . display-line-numbers-mode)
+    ;;:config
+    ;;(global-display-line-numbers-mode t)
+    ;; line number align right
+    :init
+    (setq display-line-numbers-width-start t)
+    )
+#+end_src
+
+** Comment
+注释与反注释功能。
+#+begin_src emacs-lisp
+  (use-package newcomment
+    :ensure nil
+    :bind ([remap comment-dwim] . #'comment-or-uncomment)
+    :config
+    (defun comment-or-uncomment ()
+      (interactive)
+      (if (region-active-p)
+          (comment-or-uncomment-region (region-beginning) (region-end))
+        (if (save-excursion
+              (beginning-of-line)
+              (looking-at "\\s-*$"))
+            (call-interactively 'comment-dwim)
+          (comment-or-uncomment-region (line-beginning-position) (line-end-position)))))
+    :custom
+    (comment-auto-fill-only-comments t))
+#+end_src
+
+** Htmlize
+提供代码形成 HTML 格式并保留代码高亮，使用 =htmlize-region-for-paste= 可提供 emacs 到富文本编辑器的高亮。
+#+begin_src emacs-lisp
+  (use-package htmlize
+    :ensure t
+    :defer t)
+#+end_src
+** Ends
+#+begin_src emacs-lisp
+  (provide 'init-editor)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-editor.el ends here
+#+end_src
+

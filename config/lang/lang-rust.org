@@ -1,0 +1,32 @@
+* lang-rust.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "lang-rust.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; lang-rust.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+  #+end_src
+
+
+** Conf
+#+begin_src emacs-lisp
+  (use-package rust-mode
+    :ensure t
+    :mode ("\\.rs\\'" . rust-mode)
+    :hook
+    (rust-mode . (lambda () (setq tab-width 4)))
+    )
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'lang-rust)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; lang-rust.el ends here
+  #+end_src
+

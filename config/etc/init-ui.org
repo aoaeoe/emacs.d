@@ -1,0 +1,289 @@
+* init-ui.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init-ui.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; init-ui.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+
+** Font
+本部分内容参考 =centaur emacs= 实现。该部分内容经常修改，转到 =custom.el= 中实现。
+
+以下内容不参与编译。
+#+begin_src emacs-lisp :tangle no
+  ;; Font
+  ;; Set Emacs Font for linux and windows operating system
+  (defun font-installed-p (font-name)
+    "Check if font with FONT-NAME is available."
+    (find-font (font-spec :name font-name)))
+
+  (defun leesin/font-setup ()
+    "Font setup."
+
+    (interactive)
+    (when (display-graphic-p)
+      ;; Default font
+      (cl-loop for font in '("Cascadia Code" "SauceCodePro Nerd Font" "JetBrainsMono Nerd Font" "Fira Code" "Source Code Pro" "Hack"  "Menlo" "Monaco" "Consolas")
+               when (font-installed-p font)
+               return (set-face-attribute 'default nil
+                                          :family font
+                                          ;;:weight 'normal
+                                          ;;:width 'normal
+                                          :height (cond (sys/mac 150)
+                                                        (sys/win32p 150)
+                                                        (sys/linux 180))))
+
+      ;; Unicode characters
+      (cl-loop for font in '("Symbola" "Segoe UI Symbol" "Symbol")
+               when (font-installed-p font)
+               return (set-fontset-font t 'symbol (font-spec :family font) nil 'prepend))
+
+      ;; Emoji
+      (cl-loop for font in '("Noto Color Emoji" "Apple Color Emoji")
+               when (font-installed-p font)
+               return (set-fontset-font t 'emoji (font-spec :family font) nil 'prepend))
+
+      ;; Chinese characters
+      (cl-loop for font in '("霞鹜文楷" "KaiTi" "WenQuanYi Micro Hei" "Microsoft Yahei UI" "Microsoft Yahei" "STFangsong")
+               when (font-installed-p font)
+               return (progn
+                        (setq face-font-rescale-alist `((,font . 1)))
+                        (set-fontset-font t '(#x4e00 . #x9fff) (font-spec :family font)))))
+    )
+
+  ;; Get the font set
+  (leesin/font-setup) 
+  (add-hook 'window-setup-hook #'leesin/font-setup)
+  (add-hook 'server-after-make-frame-hook #'leesin/font-setup)
+#+end_src
+
+** Icon
+#+begin_src emacs-lisp
+  ;; all the icons font
+  (use-package all-the-icons
+    :if (display-graphic-p))
+
+  ;; nerd icons
+  (use-package nerd-icons
+    :ensure t)
+#+end_src
+
+下面的代码用于给 =vertico= 插件提供图标。
+#+begin_src emacs-lisp
+  ;; add icons support for vertico
+  (use-package all-the-icons-completion
+    :if (display-graphic-p)
+    ;;:after (marginalia all-the-icons)
+    :after (vertico)
+    :config
+    (all-the-icons-completion-mode 1))
+#+end_src
+
+** Theme
+加载自行克隆的包时， ~use-package~ 后跟的包名会解析为包主函数所在文件名， ~load-path~ 后跟的名称会解析为包文件夹名(解析路径)。
+以下是测试过的一些主题：
+1. =catppuccin= 主题
+2. =hardhacker= 主题
+3. =nano-theme= 主题
+4. =everforest= 主题
+
+现将 =hardhacker=、=nano-theme=、=everforest= 均纳入 =quelpa= 管理。如需对插件进行修改，需要先改 =quelpa/build= 中的源码，而后 =quelpa-use-package= 会加载到 =elpa= 中。
+*** nano
+1. =nano emacs= 配置文件地址
+  https://github.com/rougier/nano-emacs
+2. =nano-theme= 主题地址
+   1. https://github.com/rougier/nano-theme [Offical]
+   2. https://github.com/404cn/nano-theme.el [Deprecated]
+
+由于 =nano-theme= 的标题栏底色 ~nano-faded~ 会被遮盖，建议修改 ~nano-theme-support.el~ 第 787 行 ~font-lock-string-face~ 的颜色。
+#+begin_src emacs-lisp :tangle no
+  '(font-lock-string-face         ((t (:inherit nano-default))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package nano-theme
+    :defer t
+    :quelpa (nano-theme
+             :fetcher github
+             :repo "rougier/nano-theme")
+    )
+#+end_src
+
+*** doom
+#+begin_src emacs-lisp
+  ;; Theme
+  (use-package doom-themes
+    :ensure t
+    :config
+    (setq doom-themes-enable-bold t
+      doom-themes-enable-italic t)
+    ;; (doom-themes-visual-bell-config)
+    ;; Enable custom neotree theme (all-the-icons must be installed!)
+    (doom-themes-neotree-config)
+    ;; or for treemacs users
+    (setq doom-themes-treemacs-theme "doom-atom")
+    ;; use "doom-colors" for less minimal icon theme
+    (doom-themes-treemacs-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config))
+#+end_src
+
+*** nord
+现在该包已经废弃，如需使用应当寻找其他替代内容。
+#+begin_src emacs-lisp :tangle no
+  (use-package nord-theme
+    :ensure nil)
+#+end_src
+
+*** catppuccin
+对于 =catppuccin= ：
+1. 可以选择不同的颜色风格，共有 4 种，按照亮度由亮到暗依次为 =latte= , =frappe= , =macchiato= , =mocha=
+2. =catppuccin= 主题对 ~org-verbatim~ 的强调是 ~(org-verbatim :inherit org-quote)~ ，导致显示不正确，本配置将 ~org-code~ 改为 ~(org-code :foreground ,ctp-peach)~ 将 ~org-verbatim~ 改为 ~(org-verbatim :foreground ,ctp-green)~
+3. =catppuccin= 主题对 =org-block= 的底色与普通底色相同，可以进行修改，如 ~(org-block :foreground ctp-mauve :background ,"#202334")~
+
+#+begin_src emacs-lisp
+  (use-package catppuccin-theme
+    :ensure t
+    :config
+    (setq catppuccin-flavor 'mocha)
+    )
+#+end_src
+
+*** hardhacker
+下载地址：~git clone https://github.com/hardhackerlabs/theme-emacs.git hardhacker~
+
+该代码块暂时不参与编译。
+#+begin_src emacs-lisp :tangle no
+  (use-package hardhacker-theme
+    ;;:load-path "~/.emacs.d/elpa/hardhacker"
+    :load-path (lambda() (expand-file-name "hardhacker" package-user-dir))
+    )
+#+end_src
+
+该包的命名不规范，建议不用 =quelpa= 管理，该代码块暂时不参与编译。
+#+begin_src emacs-lisp :tangle no
+  (use-package hardhacker-theme
+    :defer t
+    :quelpa (hardhacker-theme
+       :fetcher github
+       :repo "hardhackerlabs/theme-emacs")
+    )
+#+end_src
+
+*** everforest
+配置克隆地址：https://git.sr.ht/~theorytoe/everforest-theme 或 https://github.com/Theory-of-Everything/everforest-emacs.git
+
+注意需要将 =everforest.el= 中的内容取消注释，否则会产生报错。
+
+该代码块暂时不参与编译。
+#+begin_src emacs-lisp :tangle no
+  (use-package everforest
+    :load-path (lambda() (expand-file-name "everforest-theme" package-user-dir))
+    )
+#+end_src
+
+该代码块暂时不参与编译。
+#+begin_src emacs-lisp :tangle no
+  (use-package everforest
+    :ensure t
+    :defer t
+    :quelpa (everforest
+       :fetcher git
+       :url "https://git.sr.ht/~theorytoe/everforest-theme")
+    )
+#+end_src
+*** load themes
+#+begin_src emacs-lisp
+  ;; Choose one theme to load
+  ;; (load-theme 'doom-dark+ t)
+  ;; (load-theme 'doom-dracula t)
+  ;; (load-theme 'doom-snazzy t) ;; display very well
+  ;; (load-theme 'doom-spacegrey t)
+  ;; (load-theme 'catppuccin t)
+  ;; (load-theme 'doom-challenger-deep t)
+  ;; (load-theme 'everforest-hard-dark t)
+  ;; (load-theme 'nano t)
+  (cond
+    (sys/win32p
+      (load-theme 'doom-dracula t))
+    (sys/linux
+      (load-theme 'doom-palenight t)
+      ;;(nano-dark)
+     )
+  )
+#+end_src
+
+** Ligature
+编程连字符号与符号美化支持。
+#+begin_src emacs-lisp
+  (use-package composite
+    :ensure nil
+    :init (defvar composition-ligature-table (make-char-table nil))
+    :hook (((prog-mode
+             conf-mode nxml-mode markdown-mode help-mode
+             shell-mode eshell-mode term-mode vterm-mode)
+            . (lambda () (setq-local composition-function-table composition-ligature-table))))
+    :config
+    ;; support ligatures, some toned down to prevent hang
+    (let ((alist
+           '((33  . ".\\(?:\\(==\\|[!=]\\)[!=]?\\)")
+             (35  . ".\\(?:\\(###?\\|_(\\|[(:=?[_{]\\)[#(:=?[_{]?\\)")
+             (36  . ".\\(?:\\(>\\)>?\\)")
+             (37  . ".\\(?:\\(%\\)%?\\)")
+             (38  . ".\\(?:\\(&\\)&?\\)")
+             (42  . ".\\(?:\\(\\*\\*\\|[*>]\\)[*>]?\\)")
+             ;; (42 . ".\\(?:\\(\\*\\*\\|[*/>]\\).?\\)")
+             (43  . ".\\(?:\\([>]\\)>?\\)")
+             ;; (43 . ".\\(?:\\(\\+\\+\\|[+>]\\).?\\)")
+             (45  . ".\\(?:\\(-[->]\\|<<\\|>>\\|[-<>|~]\\)[-<>|~]?\\)")
+             ;; (46 . ".\\(?:\\(\\.[.<]\\|[-.=]\\)[-.<=]?\\)")
+             (46  . ".\\(?:\\(\\.<\\|[-=]\\)[-<=]?\\)")
+             (47  . ".\\(?:\\(//\\|==\\|[=>]\\)[/=>]?\\)")
+             ;; (47 . ".\\(?:\\(//\\|==\\|[*/=>]\\).?\\)")
+             (48  . ".\\(?:x[a-zA-Z]\\)")
+             (58  . ".\\(?:\\(::\\|[:<=>]\\)[:<=>]?\\)")
+             (59  . ".\\(?:\\(;\\);?\\)")
+             (60  . ".\\(?:\\(!--\\|\\$>\\|\\*>\\|\\+>\\|-[-<>|]\\|/>\\|<[-<=]\\|=[<>|]\\|==>?\\||>\\||||?\\|~[>~]\\|[$*+/:<=>|~-]\\)[$*+/:<=>|~-]?\\)")
+             (61  . ".\\(?:\\(!=\\|/=\\|:=\\|<<\\|=[=>]\\|>>\\|[=>]\\)[=<>]?\\)")
+             (62  . ".\\(?:\\(->\\|=>\\|>[-=>]\\|[-:=>]\\)[-:=>]?\\)")
+             (63  . ".\\(?:\\([.:=?]\\)[.:=?]?\\)")
+             (91  . ".\\(?:\\(|\\)[]|]?\\)")
+             ;; (92 . ".\\(?:\\([\\n]\\)[\\]?\\)")
+             (94  . ".\\(?:\\(=\\)=?\\)")
+             (95  . ".\\(?:\\(|_\\|[_]\\)_?\\)")
+             (119 . ".\\(?:\\(ww\\)w?\\)")
+             (123 . ".\\(?:\\(|\\)[|}]?\\)")
+             (124 . ".\\(?:\\(->\\|=>\\||[-=>]\\||||*>\\|[]=>|}-]\\).?\\)")
+             (126 . ".\\(?:\\(~>\\|[-=>@~]\\)[-=>@~]?\\)"))))
+      (dolist (char-regexp alist)
+        (set-char-table-range composition-ligature-table (car char-regexp)
+                              `([,(cdr char-regexp) 0 font-shape-gstring]))))
+    (set-char-table-parent composition-ligature-table composition-function-table))
+#+end_src
+** Settings
+#+begin_src emacs-lisp :tangle no
+  (when (display-graphic-p)
+    (when sys/linux
+      (set-frame-width (selected-frame) 400)
+      (set-frame-height (selected-frame) 200)))
+
+#+end_src
+
+#+begin_src emacs-lisp
+  ;; Solve the full screen issue in dwm gentoo Linux
+  (setq frame-resize-pixelwise t)
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'init-ui)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-ui.el ends here
+#+end_src
+

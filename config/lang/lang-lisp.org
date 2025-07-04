@@ -1,0 +1,28 @@
+* lang-lisp.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "lang-lisp.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; lang-lisp.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+  #+end_src
+
+** Config
+#+begin_src emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda () (setq tab-width 2)))
+#+end_src
+  
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'lang-lisp)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; lang-lisp.el ends here
+  #+end_src
+

@@ -1,0 +1,31 @@
+* lang-python.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "lang-python.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; lang-python.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+  #+end_src
+
+** Code
+#+begin_src emacs-lisp
+  (use-package python-mode
+    :ensure t
+    :mode ("\\.py\\'" . python-mode)
+    :hook
+    (python-mode . (lambda () (setq tab-width 4)))
+    )
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'lang-python)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; lang-python.el ends here
+  #+end_src
+

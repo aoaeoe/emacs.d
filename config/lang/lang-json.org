@@ -1,0 +1,32 @@
+* lang-json.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "lang-json.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; lang-json.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+
+** Conf
+#+begin_src emacs-lisp
+  (use-package json-mode
+    :ensure t
+    :mode ("\\.json\\'" . json-mode)
+    :hook
+    (json-mode . (lambda () (setq tab-width 4)))
+    )
+#+end_src
+
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'lang-json)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; lang-json.el ends here
+#+end_src
+

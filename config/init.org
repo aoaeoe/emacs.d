@@ -1,0 +1,74 @@
+* init.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init.el") :lexical t
+:END:
+
+加载主要配置文件。
+** Headers
+#+BEGIN_SRC emacs-lisp
+  ;;; init.el --- Emacs initialization config -*- lexical-binding: t -*-
+  ;;; Commentary:
+
+  ;;; Code:
+#+END_SRC
+
+** Version Check
+#+begin_src emacs-lisp
+  (when (version< emacs-version "29")
+    (error "This requires Emacs 29 and above!"))
+#+end_src
+
+** Speed up settings
+#+begin_src emacs-lisp
+  ;; Prevent flashing of unstyled modeline at startup
+  (setq-default mode-line-format nil)
+
+  ;; Speed up startup process,don't pass case-insensitive to `auto-mode-alist'
+  (setq auto-mode-case-fold nil)
+#+end_src
+
+** Global Variables
+设置 =user-init-file= 和 =user-emacs-directory= 变量，用于加载 =init.el= 所在目录下的配置文件，主要用于从其他位置加载配置环境。
+#+begin_src emacs-lisp
+  ;;(defvar config-directory nil
+  ;;  "This variable indicates where the config directory is.")
+
+  ;;(setq config-directory (file-name-directory (or load-file-name buffer-file-name)))
+
+  ;;(defvar package-user-dir nil
+  ;;  "This variable indicates where the package directory is.")
+
+  (setq user-init-file (or load-file-name (buffer-file-name)))
+  (setq user-emacs-directory (file-name-directory user-init-file))
+#+end_src
+
+** Load Path
+如需从任意其他非家目录位置加载配置环境，使用下面的加载命令 
+#+begin_src shell :tangle no
+  emacs --no-desktop --load="/path/to/early-init" --load="/path/to/init.el"
+#+end_src
+
+加载配置路径和文件。
+#+begin_src emacs-lisp 
+  ;; Load path
+  ;; Optimize: Force `lisp' and `site-lisp' at the head to reduce the startup time.
+  (defun update-load-path (&rest _)
+    "Update 'load-path'."
+    (dolist (dir '("site-lisp" "lisp/core" "lisp/etc" "lisp/lang"))
+      (push (expand-file-name dir user-emacs-directory) load-path)))
+
+  (advice-add #'package-initialize :after #'update-load-path)
+
+  (update-load-path)
+
+  ;; Indepentent custom
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (require 'init-core)
+  (provide 'init)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init.el ends here
+#+END_SRC

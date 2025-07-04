@@ -1,0 +1,364 @@
+* init-function.el
+:PROPERTIES:
+:HEADER-ARGS: :tangle (concat temporary-file-directory "init-function.el") :lexical t
+:END:
+
+** Headers
+#+begin_src emacs-lisp
+  ;;; init-function.el ---   -*- lexical-binding: t; -*-
+
+  ;;; Commentary:
+
+  ;;; Code :
+#+end_src
+
+** Self Custom
+#+begin_src emacs-lisp
+  (require 'cl-lib)
+  ;; Self Custom
+  (let ((self-custom-path (expand-file-name "self-custom.el" user-emacs-directory)))
+    (when (file-exists-p self-custom-path)
+      (load-file self-custom-path)))
+#+end_src
+
+** Startup Performance
+#+begin_src emacs-lisp
+  (defun leesin/display-startup-time ()
+    (message "Emacs loaded in %s with %d garbage collections."
+             (format "%.2f seconds"
+                     (float-time
+                      (time-subtract after-init-time before-init-time)))
+             gcs-done))
+  (add-hook 'emacs-startup-hook #'leesin/display-startup-time)
+#+end_src
+
+** UI
+#+begin_src emacs-lisp
+  (defun leesin/childframe-workable-p ()
+    "Whether childframe is workable."
+    (not (or noninteractive
+            emacs-basic-display
+            (not (display-graphic-p)))))
+
+  (defun leesin/childframe-completion-workable-p ()
+    "Whether childframe completion is workable."
+    (and (eq leesin-completion-style 'childframe)
+        (leesin/childframe-workable-p)))
+#+end_src
+
+** Proxy
+#+begin_src emacs-lisp
+  (defvar leesin/proxy-enabled nil)
+  ;;;###autoload
+  (defun leesin/toggle-proxy ()
+    (interactive)
+    (if leesin/proxy-enabled
+        (progn
+          (setq url-proxy-services nil)
+          (setq leesin/proxy-enabled nil)
+          (message "代理已关闭."))
+      (progn
+        (when sys/win32p
+          (setq url-proxy-services
+                '(("http" . "127.0.0.1:10809")
+                  ("https" . "127.0.0.1:10809"))))
+        (when sys/linux
+          (setq url-proxy-services
+                '(("http" . "127.0.0.1:20171")
+                  ("https" . "127.0.0.1:20171"))))
+        (setq leesin/proxy-enabled t)
+        (message "代理已开启."))))
+#+end_src
+
+由于下面的代码实测无法正确执行，因而不参与编译。
+#+begin_src emacs-lisp :tangle no
+  ;; Function Defination
+
+  ;;;###autoload
+  (defun leesin/toggle-proxy ()
+    (interactive)
+    (if (null url-proxy-services)
+        (when sys/win32p
+          (progn
+            (setq url-proxy-services
+                  '(("http" . "127.0.0.1:10809")
+                    ("https" . "127.0.0.1:10809")))
+            (message "代理已开启.")))
+      (when sys/linux
+        (progn
+          (setq url-proxy-services
+                '(("http" . "127.0.0.1:20171")
+                  ("https" . "127.0.0.1:20171")))
+          (message "代理已开启.")))
+      (setq url-proxy-services nil)
+      (message "代理已关闭.")))
+#+end_src
+
+** Transparency
+透明背景目前 =emacs= 已支持。
+#+begin_src emacs-lisp :tangle no
+  ;;;###autoload
+  (defun leesin/toggle-transparency()
+    (setq default-frame-alist '((alpha-background . 95)))
+    )
+  (leesin/toggle-transparency)
+#+end_src
+
+原透明函数已弃用，不会参与编译。
+#+begin_src emacs-lisp :tangle no
+  ;;;###autoload
+  (defun leesin/toggle-transparency()
+    (interactive)
+    (let ((alpha (frame-parameter nil 'alpha)))
+      (set-frame-parameter nil 'alpha
+                           (if (eql (cond ((numberp alpha) alpha)
+                                          ((numberp (cdr alpha)) (cdr alpha))
+                                          ((numberp (cadr alpha)) (cadr alpha)))
+                                    100)
+                               '(70 . 70) '(100 . 100)))))
+#+end_src
+
+** Animate text
+用于录制视频时开头播放字符动画。
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (defun animate-text (text)
+    ;; https://github.com/matrixj/405647498.github.com/blob/gh-pages/src/emacs/emacs-fun.org
+    (interactive "stext: ")  ; s means read-string
+    (switch-to-buffer (get-buffer-create "*butterfly*"))
+    (erase-buffer)
+    (animate-string text 10))
+#+end_src
+
+** Indent Region
+用于设置在任何编程模式中 =tab= 键的缩进。
+*** Indent Region
+公共函数，用于对选择区块或单行的缩进，需要给定 ~numSpaces~ 参数说明缩进长度。
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (defun leesin/indent-region (numSpaces)
+    "该函数会根据当前行或选区的起始和终止位置，将这些行的文本进行缩进处理。"
+    (let ((regionStart nil)
+          (regionEnd nil)
+          (start nil)
+          (end nil))
+      (progn
+        ; 默认是当前行的起始位置和终止位置
+        (setq regionStart (line-beginning-position))
+        (setq regionEnd (line-end-position))
+
+        ; 如果有选区，则使用选区的起始位置和终止位置
+        (when (use-region-p)
+          (setq regionStart (region-beginning))
+          (setq regionEnd (region-end)))
+
+        (save-excursion
+          ;; 通过`narrow-to-region'和`widen'修复缩进影响下一行
+          ;; 限制缩进范围
+          (narrow-to-region regionStart regionEnd)
+
+          ; 恢复位置
+          (goto-char regionStart)                ; 移动到选区的起始位置
+          (setq start (line-beginning-position)) ; 保存行的起始位置
+          (goto-char regionEnd)                  ; 移动到选区的终止位置
+          (setq end (line-end-position))         ; 保存行的终止位置
+
+          ; 对 start 和 end 之间的文本进行缩进
+          (indent-rigidly start end numSpaces)
+          (setq deactivate-mark nil) ; 恢复选区
+          ;; 修复缩进范围
+          (widen)
+          )
+        )
+      )
+    )
+#+end_src
+
+*** Untab Region
+命令函数，用于将选定的文本反向缩进。
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (defun leesin/untab-region ()
+    "命令函数，它的作用是将选定的文本块反向缩进。"
+    (interactive)
+    ;; (leesin/indent-region -4)
+    ;; `bolp' 仅适用于判断单个点，而不适用于选区
+    (if indent-tabs-mode
+        (if (use-region-p)
+            (leesin/unindent-region-with-tabs)
+          (call-interactively #'backward-delete-char))
+      (leesin/unindent-region-without-tabs)
+      )
+    )
+#+end_src
+
+该函数用于在 ~indent-tabs-mode~ 为 ~nil~ 时删除空格字符。
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (defun leesin/unindent-region-without-tabs ()
+    ;; 如果存在选区，则调用 `leesin/indent-region' 函数，并计算缩进值传递给它。
+    ;; 如果没有选区，则计算需要反向缩进多少，并使用 `delete-char'
+    (if (use-region-p)
+        (leesin/indent-region (- 0 tab-width))
+        ;; (progn
+        ;;   (goto-char (region-beginning))
+        ;;   (let* ((start (region-beginning))
+        ;;          (offset (current-indentation))
+        ;;          (movement (% (- start offset) tab-width))
+        ;;          (spaces (- (if (= 0 movement) tab-width
+        ;;                       (- tab-width movement)))))
+        ;;     (leesin/indent-region spaces)))
+      (unless (bolp)
+        (save-excursion
+          (when (> (current-column) (current-indentation))
+            (back-to-indentation)) 
+          (let* ((movement (% (current-column) tab-width))
+                 (spaces (if (= 0 (current-column)) 0
+                           (- (if (= 0 movement) tab-width
+                              (- tab-width movement))))))
+            (delete-char spaces))
+          )
+        )
+      )
+    )
+#+end_src
+
+该函数用于在 ~indent-tabs-mode~ 时删除制表符。
+注意这个函数和后面的 ~leesin/indent-region-with-tabs~ 的区别。
+本函数加了一个 ~save-restriction~ ，否则 ~widen~ 不会自动执行。
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (defun leesin/unindent-region-with-tabs ()
+    "在选定区域内逐行删除起始字符(认为它们是\t)。"
+    (let* ((regionStart (region-beginning))
+           (regionEnd (region-end)))
+      (save-excursion
+        (save-restriction
+          (narrow-to-region regionStart regionEnd)
+          (goto-char regionStart)
+          (while (< (point) regionEnd)
+            (beginning-of-line)
+            ;;(call-interactively #'backward-delete-char)
+            (delete-char 1)
+            (forward-line 1))
+          (setq deactivate-mark nil) ; 恢复选区
+          )
+        (widen)
+        )
+      )
+    )
+#+end_src
+
+*** Tab Region
+命令函数，用于将选定的文本进行缩进。
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (defun leesin/tab-region ()
+    "命令函数，它用于将选定的文本缩进。"
+    (interactive)
+    (if indent-tabs-mode
+        (progn
+          (if (use-region-p)
+              (leesin/indent-region-with-tabs) 
+            (insert "\t"))) 
+      (leesin/indent-region-without-tabs)
+      )
+    )
+#+end_src
+
+该函数用于在 ~indent-tabs-mode~ 为 ~nil~ 时插入空格。
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (defun leesin/indent-region-without-tabs ()
+    ;; 如果存在选区，调用 `leesin/indent-region' 函数，并计算缩进值
+    (let ((offset nil)
+          (movement nil)
+          (spaces nil))
+      ;; 如果没有选区，则计算需要缩进的空格数，使用 `insert'
+      (if (use-region-p)
+          (leesin/indent-region tab-width)
+          ;; (progn
+          ;;   (goto-char (region-beginning))
+          ;;   (setq offset (current-indentation)
+          ;;         movement (% offset tab-width)
+          ;;         spaces (if (= 0 movement) tab-width
+          ;;                (- tab-width movement)))
+          ;;   (leesin/indent-region spaces)
+          ;;   )
+        (progn
+          (setq movement (% (current-column) tab-width)
+                spaces (if (= 0 movement) tab-width
+                       (- tab-width movement)))
+         (insert (make-string spaces ? )))
+        )
+      )
+    )
+#+end_src
+
+该函数用于在 ~indent-tabs-mode~ 时插入制表符。
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (defun leesin/indent-region-with-tabs ()
+    "为选定区域逐行添加 \t"
+    (let* ((regionStart (region-beginning))
+           (regionEnd (region-end)))
+      (save-excursion
+        (narrow-to-region regionStart regionEnd)
+        (goto-char regionStart)
+        (while (< (point) regionEnd)
+          (beginning-of-line)
+          (insert "\t")
+          (forward-line 1))
+        (setq deactivate-mark nil)  ; 恢复选区
+        (widen)
+        )
+      )
+    )
+#+end_src
+
+*** Redefine Tab Key
+该函数花费了足足两天的时间编写，不过它的具体实现仍然有误，但我才发现 =emacs= 本身定义了三个完美的函数，以后用下面三个：
+1. 重新缩进列表内所有行 ~indent-sexp~ 快捷键 =C-M-q=
+2. 列表侧移使第一行正确缩进 快捷键 =C-u TAB=
+3. 重新缩进区域内所有行 ~indent-region~ 快捷键 =C-M-\=
+#+begin_src emacs-lisp
+  ;;;###autoload
+  (defun leesin/hack-tab-key ()
+    "命令函数，它重新定义了 <tab> 和 <backtab> 键的行为。"
+    ;; 通过调用 local-set-key 函数，它将 <tab> 键绑定到 leesin/tab-region 函数，将 <backtab> 键绑定到 leesin/untab-region 函数。
+    (interactive)
+    (local-set-key (kbd "<tab>") 'leesin/tab-region)
+    (local-set-key (kbd "<backtab>") 'leesin/untab-region))
+
+  (add-hook 'prog-mode-hook 'leesin/hack-tab-key)
+#+end_src
+
+** Org Export
+导出为 HTML 时使用。
+#+begin_src emacs-lisp
+  (defun leesin-org-inline-css-hook (exporter)
+    "Insert custom inline css"
+    (when (eq exporter 'html)
+      (let* ((dir (ignore-errors (file-name-directory (buffer-file-name))))
+             (style-path (concat user-emacs-directory "config/org-style/gongzhitaao-style.css"))
+             (final-path (if (file-exists-p style-path) style-path nil)))
+        (when final-path
+          (setq-local org-html-head-include-default-style nil)
+          (setq-local org-html-head (concat
+                                     "<style type=\"text/css\">\n"
+                                     "<!--/*--><![CDATA[/*><!--*/\n"
+                                     (with-temp-buffer
+                                       (insert-file-contents final-path)
+                                       (buffer-string))
+                                     "/*]]>*/-->\n"
+                                     "</style>\n"))))))
+
+  (add-hook 'org-export-before-processing-hook 'leesin-org-inline-css-hook)
+#+end_src
+
+** Ends
+#+begin_src emacs-lisp
+  (provide 'init-function)
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;; init-function.el ends here
+#+end_src
