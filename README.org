@@ -12,18 +12,10 @@ Use the following command to use my configuration.
 #+END_src
 
 ** Dependency
-some packages download from =github=，you need to clone it manually.
+some packages download from =github= ，you need to clone it manually.
 1. doom-snippets
    ~git clone https://github.com/doomemacs/snippets~
 2. color-rg
    1. ~git clone https://github.com/manateelazycat/color-rg~
    2. if you dislike =package.el= ，you can update it according to =init-vertico.org= .
-
-** Faster Launching
-after started =emacs= run ~eval-expression~.
-#+begin_src emacs-lisp
-  (byte-recompile-directory "lisp/etc" 0)
-  (byte-recompile-directory "lisp/lang" 0)
-#+end_src
-=0= not confirm。
 
