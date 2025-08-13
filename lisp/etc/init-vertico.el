@@ -34,7 +34,7 @@
   )
 
 ;; 检查变量，支持childframe则使用vertico-posframe
-(when (leesin/childframe-completion-workable-p)
+(when (evims/childframe-completion-workable-p)
   (use-package vertico-posframe
     :ensure t
     :hook (vertico-mode . vertico-posframe-mode)
@@ -124,7 +124,7 @@
    ("C-c f"                               . consult-find)
    ;;("\e\ef"                               . consult-locate)
    ; need to enable locate first
-   ("C-c n h"                             . leesin/consult-find-org-headings)
+   ("C-c n h"                             . consult-find-org-headings)
    ;;:map org-mode-map
    ;;("C-c C-j"                             . consult-org-heading)
    :map minibuffer-local-map
@@ -153,7 +153,7 @@
 
   ;; search all org file headings under a directory, see:
   ;; https://emacs-china.org/t/org-files-heading-entry/20830/4
-  (defun leesin/consult-find-org-headings (&optional match)
+  (defun consult-find-org-headings (&optional match)
     "find headngs in all org files."
     (interactive)
     (consult-org-heading match (directory-files org-directory t "^[0-9]\\{8\\}.+\\.org$")))

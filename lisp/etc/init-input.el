@@ -27,5 +27,5 @@
                (set (make-local-variable 'pangu-spacing-real-insert-separtor) t))))
 
 (provide 'init-input)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;; init-input.el ends here

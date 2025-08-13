@@ -12,5 +12,5 @@
   (setq which-key-idle-delay 0.3))
 
 (provide 'init-kbd)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;; init-kbd.el ends here

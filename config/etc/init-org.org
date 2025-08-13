@@ -52,14 +52,14 @@
           org-hide-emphasis-markers t
           org-startup-indented t
           org-modern-timestamp nil)
-    (defun leesin/self-org-mode-hook()
+    (defun evims/self-org-mode-hook()
       ;;(interactive)
       (org-indent-mode t)
       (variable-pitch-mode -1)
       (auto-fill-mode -1)
       (visual-line-mode t)
       )
-    (defun leesin/self-org-prettify-symbols()
+    (defun evims/self-org-prettify-symbols()
       ;;(interactive)
       (setq prettify-symbols-alist
             (mapcan (lambda (x) (list x (cons (upcase (car x)) (cdr x))))
@@ -98,8 +98,8 @@
       (prettify-symbols-mode 1)
       )
     :hook
-    (org-mode . leesin/self-org-prettify-symbols)
-    (org-mode . leesin/self-org-mode-hook)
+    (org-mode . evims/self-org-prettify-symbols)
+    (org-mode . evims/self-org-mode-hook)
     ;; Get the org symbols set
     :custom-face
     ;; 设置Org mode标题以及每级标题行的大小
@@ -254,9 +254,9 @@
     (evil-define-key 'normal 'evil-org-mode
       (kbd "O") 'evil-open-above)
     (evil-define-key 'visual 'evil-org-mode
-      (kbd "<tab>") 'leesin/tab-region)
+      (kbd "<tab>") 'evims/tab-region)
     (evil-define-key 'visual 'evil-org-mode
-      (kbd "<backtab>") 'leesin/untab-region)
+      (kbd "<backtab>") 'evims/untab-region)
     )
 #+end_src
 
@@ -296,7 +296,7 @@
 早期使用的该包，目前已弃用，不参与编译。
 #+begin_src emacs-lisp :tangle no
   ;; Org-tree-slide 
-  (defun leesin/org-tree-slide-presentation-setup()
+  (defun evims/org-tree-slide-presentation-setup()
     ;; Cannot set unicode amount
     (setq text-scale-mode-amount 3)
     (org-display-inline-images)
@@ -304,15 +304,15 @@
     ;;(text-scale-adjust 1)
     )
 
-  (defun leesin/org-tree-slide-presentation-end()
+  (defun evims/org-tree-slide-presentation-end()
     (text-scale-mode 0)
     )
 
   (use-package org-tree-slide
     :ensure t
     :defer t
-    :hook ((org-tree-slide-play . leesin/org-tree-slide-presentation-setup)
-           (org-tree-slide-stop . leesin/org-tree-slide-presentation-end))
+    :hook ((org-tree-slide-play . evims/org-tree-slide-presentation-setup)
+           (org-tree-slide-stop . evims/org-tree-slide-presentation-end))
     :custom
     (org-tree-slide-slide-in-effect t)
     (org-tree-slide-activate-message "Presentation started!")
@@ -326,60 +326,60 @@
 目前使用该包，考虑 ~reveal.js~
 #+begin_src emacs-lisp
   ;; Set margin for org-present
-  (defun leesin/org-mode-visual-fill()
+  (defun evims/org-mode-visual-fill()
     (setq visual-fill-column-width 80
           visual-fill-column-center-text t)
     (visual-fill-column-mode 1))
 
-  (defun leesin/org-mode-visual-fill-quit()
+  (defun evims/org-mode-visual-fill-quit()
     ;;(setq visual-fill-column-width 0
     ;;      visual-fill-column-center-text nil)
     (visual-fill-column-mode 0))
 
   (use-package visual-fill-column
     :ensure t
-    :hook ((org-present-mode . leesin/org-mode-visual-fill)
-           (org-present-mode-quit . leesin/org-mode-visual-fill-quit)))
+    :hook ((org-present-mode . evims/org-mode-visual-fill)
+           (org-present-mode-quit . evims/org-mode-visual-fill-quit)))
 
   ;; Org-present Configuration
-  (defun leesin/org-present-prepare-slide()
+  (defun evims/org-present-prepare-slide()
     (org-overview)
     ;;`org-show-entry' is an obsolete function; use `org-fold-show-entry' instead.
     (org-fold-show-entry)
     ;;`org-show-children' is an obsolete function; use `org-fold-show-children' instead.
     (org-fold-show-children))
 
-  (defun leesin/org-present-hook()
+  (defun evims/org-present-hook()
     (display-line-numbers-mode nil)
     (setq-local face-remapping-alist '((header-line (:height 4.0) variable-pitch)))
     (setq text-scale-mode-amount 1)
     (text-scale-mode 1)
     (setq header-line-format " ")
     (org-display-inline-images)
-    (leesin/org-present-prepare-slide))
+    (evims/org-present-prepare-slide))
 
-  (defun leesin/org-present-quit-hook()
+  (defun evims/org-present-quit-hook()
     (display-line-numbers-mode t)
     (text-scale-mode 0)
     (setq header-line-format nil)
     (org-remove-inline-images))
 
-  (defun leesin/org-present-prev()
+  (defun evims/org-present-prev()
     (interactive)
     (org-present-prev)
-    (leesin/org-present-prepare-slide))
+    (evims/org-present-prepare-slide))
 
-  (defun leesin/org-present-next()
+  (defun evims/org-present-next()
     (interactive)
     (org-present-next)
-    (leesin/org-present-prepare-slide))
+    (evims/org-present-prepare-slide))
 
   (use-package org-present
     :bind (:map org-present-mode-keymap
-           ("C-c C-j" . leesin/org-present-next)
-           ("C-c C-k" . leesin/org-present-prev))
-    :hook ((org-present-mode . leesin/org-present-hook)
-           (org-present-mode-quit . leesin/org-present-quit-hook)))
+           ("C-c C-j" . evims/org-present-next)
+           ("C-c C-k" . evims/org-present-prev))
+    :hook ((org-present-mode . evims/org-present-hook)
+           (org-present-mode-quit . evims/org-present-quit-hook)))
 #+end_src
 
 ** Settings

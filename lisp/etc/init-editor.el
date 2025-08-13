@@ -4,18 +4,18 @@
 
 ;;; Code :
 
-(defvar leesin/indent-tabs-modes-list
+(defvar evims/indent-tabs-modes-list
   '(makefile-gmake-mode
     makefile-mode
     )
   )
 
-(defun leesin/toggle-indent-tabs-mode ()
-  (if (member major-mode leesin/indent-tabs-modes-list)
+(defun evims/toggle-indent-tabs-mode ()
+  (if (member major-mode evims/indent-tabs-modes-list)
       (setq indent-tabs-mode t)
     (setq indent-tabs-mode nil)))
 
-(add-hook 'after-change-major-mode-hook 'leesin/toggle-indent-tabs-mode)
+(add-hook 'after-change-major-mode-hook 'evims/toggle-indent-tabs-mode)
 
 (use-package highlight-indent-guides
   :quelpa (highlight-indent-guides

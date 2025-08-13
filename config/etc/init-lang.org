@@ -39,8 +39,8 @@
                    (lsp-enable-which-key-integration)
 
                    ;; Format and organize imports
-                   (when (and leesin-lsp-format-on-save
-                              (not (apply #'derived-mode-p leesin-lsp-format-on-save-ignore-modes)))
+                   (when (and evims-lsp-format-on-save
+                              (not (apply #'derived-mode-p evims-lsp-format-on-save-ignore-modes)))
                      (add-hook 'before-save-hook #'lsp-format-buffer t t)
                      (add-hook 'before-save-hook #'lsp-organize-imports t t))))
       ;;Reset company backends

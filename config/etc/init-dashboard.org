@@ -61,7 +61,7 @@
                                       (bookmarks . "book")
                                       (agenda . "calendar")))
     (setq dashboard-set-navigator t)
-    (setq dashboard-banner-logo-title "LeeSin@EndlessPeak")
+    (setq dashboard-banner-logo-title "evims@EndlessPeak")
     (when (display-graphic-p)
       (setq dashboard-navigator-buttons
             `(;; line1

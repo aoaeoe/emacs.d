@@ -68,5 +68,5 @@
   )
 
 (provide 'init-dashboard)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;; init-dashboard.el ends here

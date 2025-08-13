@@ -115,5 +115,5 @@
 (setq frame-resize-pixelwise t)
 
 (provide 'init-ui)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;; init-ui.el ends here

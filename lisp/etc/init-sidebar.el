@@ -20,7 +20,7 @@
           treemacs-width-is-initially-locked       nil
           ))
   (when sys/win32p
-    (setq treemacs-python-executable "C:/Users/ASUS/AppData/Local/Programs/Python/Python310/python.exe"))
+    (setq treemacs-python-executable "C:/Users/Administrator/AppData/Local/Programs/Python/python.exe"))
   :bind
   (:map global-map
         ("M-0"       . treemacs-select-window)
@@ -31,9 +31,6 @@
         ("C-x t C-t" . treemacs-find-file)
         ("C-x t M-t" . treemacs-find-tag)))
 
-(use-package treemacs-evil
-  :after (treemacs evil)
-  :ensure t)
 
 (use-package treemacs-projectile
   :after (treemacs projectile)

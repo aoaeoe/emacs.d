@@ -1,4 +1,4 @@
-;; Language Server (eglot - builtin since v29)
+;; Language Server
 (use-package eglot
   :bind ("C-c e f" . eglot-format)
   :init

@@ -80,5 +80,5 @@
 (advice-add #'company-yasnippet :around #'company-yasnippet/disable-after-dot)
 
 (provide 'init-complete)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;; init-complete.el ends here

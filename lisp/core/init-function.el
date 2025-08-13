@@ -10,33 +10,33 @@
   (when (file-exists-p self-custom-path)
     (load-file self-custom-path)))
 
-(defun leesin/display-startup-time ()
+(defun evims/display-startup-time ()
   (message "Emacs loaded in %s with %d garbage collections."
            (format "%.2f seconds"
                    (float-time
                     (time-subtract after-init-time before-init-time)))
            gcs-done))
-(add-hook 'emacs-startup-hook #'leesin/display-startup-time)
+(add-hook 'emacs-startup-hook #'evims/display-startup-time)
 
-(defun leesin/childframe-workable-p ()
+(defun evims/childframe-workable-p ()
   "Whether childframe is workable."
   (not (or noninteractive
           emacs-basic-display
           (not (display-graphic-p)))))
 
-(defun leesin/childframe-completion-workable-p ()
+(defun evims/childframe-completion-workable-p ()
   "Whether childframe completion is workable."
-  (and (eq leesin-completion-style 'childframe)
-      (leesin/childframe-workable-p)))
+  (and (eq evims-completion-style 'childframe)
+      (evims/childframe-workable-p)))
 
-(defvar leesin/proxy-enabled nil)
+(defvar evims/proxy-enabled nil)
 ;;;###autoload
-(defun leesin/toggle-proxy ()
+(defun evims/toggle-proxy ()
   (interactive)
-  (if leesin/proxy-enabled
+  (if evims/proxy-enabled
       (progn
         (setq url-proxy-services nil)
-        (setq leesin/proxy-enabled nil)
+        (setq evims/proxy-enabled nil)
         (message "代理已关闭."))
     (progn
       (when sys/win32p
@@ -47,7 +47,7 @@
         (setq url-proxy-services
               '(("http" . "127.0.0.1:20171")
                 ("https" . "127.0.0.1:20171"))))
-      (setq leesin/proxy-enabled t)
+      (setq evims/proxy-enabled t)
       (message "代理已开启."))))
 
 ;;;###autoload
@@ -59,7 +59,7 @@
   (animate-string text 10))
 
 ;;;###autoload
-(defun leesin/indent-region (numSpaces)
+(defun evims/indent-region (numSpaces)
   "该函数会根据当前行或选区的起始和终止位置，将这些行的文本进行缩进处理。"
   (let ((regionStart nil)
         (regionEnd nil)
@@ -97,25 +97,25 @@
   )
 
 ;;;###autoload
-(defun leesin/untab-region ()
+(defun evims/untab-region ()
   "命令函数，它的作用是将选定的文本块反向缩进。"
   (interactive)
-  ;; (leesin/indent-region -4)
+  ;; (evims/indent-region -4)
   ;; `bolp' 仅适用于判断单个点，而不适用于选区
   (if indent-tabs-mode
       (if (use-region-p)
-          (leesin/unindent-region-with-tabs)
+          (evims/unindent-region-with-tabs)
         (call-interactively #'backward-delete-char))
-    (leesin/unindent-region-without-tabs)
+    (evims/unindent-region-without-tabs)
     )
   )
 
 ;;;###autoload
-(defun leesin/unindent-region-without-tabs ()
-  ;; 如果存在选区，则调用 `leesin/indent-region' 函数，并计算缩进值传递给它。
+(defun evims/unindent-region-without-tabs ()
+  ;; 如果存在选区，则调用 `evims/indent-region' 函数，并计算缩进值传递给它。
   ;; 如果没有选区，则计算需要反向缩进多少，并使用 `delete-char'
   (if (use-region-p)
-      (leesin/indent-region (- 0 tab-width))
+      (evims/indent-region (- 0 tab-width))
       ;; (progn
       ;;   (goto-char (region-beginning))
       ;;   (let* ((start (region-beginning))
@@ -123,7 +123,7 @@
       ;;          (movement (% (- start offset) tab-width))
       ;;          (spaces (- (if (= 0 movement) tab-width
       ;;                       (- tab-width movement)))))
-      ;;     (leesin/indent-region spaces)))
+      ;;     (evims/indent-region spaces)))
     (unless (bolp)
       (save-excursion
         (when (> (current-column) (current-indentation))
@@ -139,7 +139,7 @@
   )
 
 ;;;###autoload
-(defun leesin/unindent-region-with-tabs ()
+(defun evims/unindent-region-with-tabs ()
   "在选定区域内逐行删除起始字符(认为它们是\t)。"
   (let* ((regionStart (region-beginning))
          (regionEnd (region-end)))
@@ -160,34 +160,34 @@
   )
 
 ;;;###autoload
-(defun leesin/tab-region ()
+(defun evims/tab-region ()
   "命令函数，它用于将选定的文本缩进。"
   (interactive)
   (if indent-tabs-mode
       (progn
         (if (use-region-p)
-            (leesin/indent-region-with-tabs) 
+            (evims/indent-region-with-tabs) 
           (insert "\t"))) 
-    (leesin/indent-region-without-tabs)
+    (evims/indent-region-without-tabs)
     )
   )
 
 ;;;###autoload
-(defun leesin/indent-region-without-tabs ()
-  ;; 如果存在选区，调用 `leesin/indent-region' 函数，并计算缩进值
+(defun evims/indent-region-without-tabs ()
+  ;; 如果存在选区，调用 `evims/indent-region' 函数，并计算缩进值
   (let ((offset nil)
         (movement nil)
         (spaces nil))
     ;; 如果没有选区，则计算需要缩进的空格数，使用 `insert'
     (if (use-region-p)
-        (leesin/indent-region tab-width)
+        (evims/indent-region tab-width)
         ;; (progn
         ;;   (goto-char (region-beginning))
         ;;   (setq offset (current-indentation)
         ;;         movement (% offset tab-width)
         ;;         spaces (if (= 0 movement) tab-width
         ;;                (- tab-width movement)))
-        ;;   (leesin/indent-region spaces)
+        ;;   (evims/indent-region spaces)
         ;;   )
       (progn
         (setq movement (% (current-column) tab-width)
@@ -199,7 +199,7 @@
   )
 
 ;;;###autoload
-(defun leesin/indent-region-with-tabs ()
+(defun evims/indent-region-with-tabs ()
   "为选定区域逐行添加 \t"
   (let* ((regionStart (region-beginning))
          (regionEnd (region-end)))
@@ -217,16 +217,16 @@
   )
 
 ;;;###autoload
-(defun leesin/hack-tab-key ()
+(defun evims/hack-tab-key ()
   "命令函数，它重新定义了 <tab> 和 <backtab> 键的行为。"
-  ;; 通过调用 local-set-key 函数，它将 <tab> 键绑定到 leesin/tab-region 函数，将 <backtab> 键绑定到 leesin/untab-region 函数。
+  ;; 通过调用 local-set-key 函数，它将 <tab> 键绑定到 evims/tab-region 函数，将 <backtab> 键绑定到 evims/untab-region 函数。
   (interactive)
-  (local-set-key (kbd "<tab>") 'leesin/tab-region)
-  (local-set-key (kbd "<backtab>") 'leesin/untab-region))
+  (local-set-key (kbd "<tab>") 'evims/tab-region)
+  (local-set-key (kbd "<backtab>") 'evims/untab-region))
 
-(add-hook 'prog-mode-hook 'leesin/hack-tab-key)
+(add-hook 'prog-mode-hook 'evims/hack-tab-key)
 
-(defun leesin-org-inline-css-hook (exporter)
+(defun evims-org-inline-css-hook (exporter)
   "Insert custom inline css"
   (when (eq exporter 'html)
     (let* ((dir (ignore-errors (file-name-directory (buffer-file-name))))
@@ -243,7 +243,7 @@
                                    "/*]]>*/-->\n"
                                    "</style>\n"))))))
 
-(add-hook 'org-export-before-processing-hook 'leesin-org-inline-css-hook)
+(add-hook 'org-export-before-processing-hook 'evims-org-inline-css-hook)
 
 (provide 'init-function)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

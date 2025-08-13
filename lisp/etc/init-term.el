@@ -10,13 +10,13 @@
   :config
   (setq vterm-max-scrollback 50000)
   (setq vterm-kill-buffer-on-exit t)
-  (defun leesin/vterm-mode-hook()
+  (defun vterm-mode-hook()
     ;;Don't prompt about dying processes when killing vterm
     (setq confirm-kill-processes nil)
     ;;Prevent premature horizontal scrolling
     (setq hscroll-margin 0)
     )
-  :hook (vterm-mode . leesin/vterm-mode-hook)
+  :hook (vterm-mode . vterm-mode-hook)
   )
 
 (use-package vterm-toggle
