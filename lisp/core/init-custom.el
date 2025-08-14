@@ -1,8 +1,6 @@
 ;;; init-custom.el ---   -*- lexical-binding: t; -*-
-
 ;;; Commentary:
-
-;;; Code :
+;;; Code:
 (require 'init-const)
 
 ;; Coding System UTF-8
@@ -44,16 +42,12 @@
               'conf-mode-hook
               'c-mode-hook
               'c++-mode-hook
-              'java-mode-hook
               'python-mode-hook))
 (add-hook hook #'(lambda ()
                ;; 设置自动换行
                (setq truncate-lines nil)
-               ;; 针对中文折行的问题进行设置
-               ;;(setq word-wrap nil)
                (auto-fill-mode -1)
                )))
-;;(setq word-wrap-by-category t)
 
 ;; Simplify confirm process
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -72,5 +66,4 @@
 (setq evims-lsp-format-on-save-ignore-modes '(c-mode c++-mode python-mode markdown-mode) )
 
 (provide 'init-custom)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-custom.el ends here

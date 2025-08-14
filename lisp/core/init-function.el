@@ -1,8 +1,6 @@
 ;;; init-function.el ---   -*- lexical-binding: t; -*-
-
 ;;; Commentary:
-
-;;; Code :
+;;; Code:
 
 (require 'cl-lib)
 ;; Self Custom

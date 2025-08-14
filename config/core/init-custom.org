@@ -61,7 +61,6 @@
                 'conf-mode-hook
                 'c-mode-hook
                 'c++-mode-hook
-                'java-mode-hook
                 'python-mode-hook))
   (add-hook hook #'(lambda ()
                  ;; 设置自动换行

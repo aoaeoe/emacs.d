@@ -31,7 +31,7 @@
 ** Edit Tool & Search Engine
 #+begin_src emacs-lisp
   ;; Edit Mode
-  (require 'init-evil)
+  ;; (require 'init-evil)
   (require 'init-editor)
   ;; Search engine
   ;; (require 'init-ivy)

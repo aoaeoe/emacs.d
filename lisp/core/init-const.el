@@ -1,8 +1,6 @@
 ;;; init-const.el ---   -*- lexical-binding: t; -*-
-
 ;;; Commentary:
-
-;;; Code :
+;;; Code:
 
 ;; Judge Operation System
 (defconst sys/win32p
@@ -22,5 +20,4 @@
   "Emacs is 30 or above.")
 
 (provide 'init-const)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; init-const.el ends here
