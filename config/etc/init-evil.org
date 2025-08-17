@@ -29,33 +29,6 @@
   )
 #+end_src
 
-也可以使用 =package.el= 安装。下面的代码不会参与编译。
-#+begin_src emacs-lisp :tangle no
-  (unless (package-installed-p 'evil)
-    (package-install 'evil))
-#+end_src
-
-*** Load
-由于使用 =use-package= ，下面的代码不会参与编译。
-#+begin_src emacs-lisp :tangle no
-  (require 'evil)
-  (evil-mode 1)
-
-  ;; Define Org Mode Keys
-  ;(evil-declare-key 'normal org-mode-map
-  ;  "gh" 'outline-up-heading
-  ;  "$" 'org-end-of-line ; smarter behavior on headlines etc.
-  ;  "^" 'org-beginning-of-line ; ditto
-  ;  ;;"<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
-  ;  ;;">" 'org-demote-or-promote ; indent
-  ;  (kbd "TAB") 'org-cycle)
-
-  ;; metaright and metaleft
-  ;(evil-declare-key 'insert org-mode-map
-    ;(kbd "TAB") 'org-do-demote 
-    ;(kbd "<backtab>") 'org-do-promote)
-#+end_src
-
 ** Evil-collection
 使用 =evil-collection= 为其他常用 emacs 插件提供 =evil= 绑定。
 #+begin_src emacs-lisp

@@ -55,7 +55,7 @@
              (,(all-the-icons-octicon "mark-github" :height 1.1 :v-adjust 0.0)
               "Github"
               "Browse Emacs Github"
-              (lambda (&rest _) (browse-url "https://github.com/endlesspeak/.emacs.d")))
+              (lambda (&rest _) (browse-url "https://github.com/evims/.emacs.d")))
              (,(all-the-icons-octicon "history") "Recently" "Restore closed buffers"
               (lambda (&rest _) (progn (print "test") (recentf-open-files))))
              ("⚑" "Bookmarks" "Quick access bookmarks" (lambda (&rest _) (bookmark-set)))   

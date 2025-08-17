@@ -24,7 +24,6 @@
           ("<tab>" . vertico-insert)    ; Choose selected candidate
           ("<escape>" . vertico-exit) ; Close minibuffer
           ("DEL" . 'vertico-directory-delete-char)
-          ;; NOTE 2022-02-05: Cycle through candidate groups
           ;;("C-M-n" . vertico-next-group)
           ;;("C-M-p" . vertico-previous-group)
           )
