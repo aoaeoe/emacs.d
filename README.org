@@ -1,10 +1,6 @@
 * vanilla Emacs
-** Features
-1. Modularization
-2. Write From scratch
-3. Manage the code by org mode
-** Build
-Use the following command to use my configuration.
+
+Usage:
 #+BEGIN_src sh
   mv ~/.emacs.d ~/.emacs.d.bak
   git clone https://github.com/aoaeoe/.emacs.d ~
@@ -12,10 +8,5 @@ Use the following command to use my configuration.
 #+END_src
 
 ** Dependency
-some packages download from =github= ，you need to clone it manually.
 1. doom-snippets
-   ~git clone https://github.com/doomemacs/snippets~
 2. color-rg
-   1. ~git clone https://github.com/manateelazycat/color-rg~
-   2. if you dislike =package.el= ，you can update it according to =init-vertico.org= .
-
