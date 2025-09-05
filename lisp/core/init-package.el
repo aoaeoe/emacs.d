@@ -14,8 +14,8 @@
 (setq package-user-dir (expand-file-name "elpa" user-emacs-directory))
 
 ;; if install quelpa, use proxy or ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-(setq package-archives '(("melpa" . "https:///melpa.org/packages/")
-			 ;;("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+(setq package-archives '(;;("melpa" . "https:///melpa.org/packages/")
+			                   ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
                          ;;("org" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
                          ("nongnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/nongnu/")
                          ("gnu" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
