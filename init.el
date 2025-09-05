@@ -2,9 +2,17 @@
 ;;; Commentary:
 
 ;;; Code:
+(unless (package-installed-p 'quelpa)
+  (with-current-buffer
+    (url-retrieve-synchronously
+      "https://raw.githubusercontent.com/quelpa/master/quelpa.el"
+      t t)
+    (goto-char (point-max))
+    (eval-print-last-sexp)))
+(require 'quelpa)
 
-(when (version< emacs-version "29")
-  (error "This requires Emacs 29 and above!"))
+(when (version< emacs-version "30")
+  (error "This requires Emacs 30 and above!"))
 
 ;; Prevent flashing of unstyled modeline at startup
 (setq-default mode-line-format nil)
