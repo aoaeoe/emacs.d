@@ -10,16 +10,9 @@
   :hook (after-init . yas-global-mode)
   :config
   (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
-
-  ;;(setq yas-snippet-dirs '("~/.emacs.d/snippets"))
-  ;; check corfu frame,if it exists,disable yassnippet keymap
-  ;;:custom
-  ;;(yas-keymap-disable-hook
-  ;;(lambda () (and (frame-live-p corfu--frame)
-  ;;                 (frame-visible-p corfu--frame))))
   )
 
-;;Clone this repo somewhere local https://github.com/doomemacs/snippets
+;;Clone this repo https://github.com/doomemacs/snippets to local ~/.emacs.d/elpa/snippets
 (use-package doom-snippets
   ;:load-path "~/.emacs.d/elpa/snippets"
   :load-path (lambda() (expand-file-name "snippets" package-user-dir))
@@ -58,14 +51,6 @@
         company-tooltip-offset-display 'scrollbar
         company-begin-commands '(self-insert-command)
         company-backends '((company-yasnippet company-dabbrev company-capf company-files)))
-  ;;The code above can only show one type of complete method. 
-  ;;Unless set all the company-backens in a group by add another ()
-
-  ;;Use the code blow can show code-complete with yasnippet at the same time
-  ;;(push '(company-semantic :with company-yasnippet) company-backends)
-  ;;(push '(company-capf :with company-yasnippet) company-backends)
-  ;;Refer to the doom emacs method,both can be shown at the same time.
-  ;;See `init-lang.el'
   )
 
 ;;company-yasnippet disable after dot

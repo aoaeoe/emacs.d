@@ -4,9 +4,13 @@ Usage:
 #+BEGIN_src sh
   mv ~/.emacs.d ~/.emacs.d.bak
   git clone https://github.com/aoaeoe/.emacs.d ~
+  rm *.el # necessary
   make generate
 #+END_src
 
 ** Dependency
-1. doom-snippets
-2. color-rg
+1. quelpa # use tsinghua melpa if in China to download packages faster
+2. doom-snippets # git clone https://github.com/doomemacs/snippets.git ~/.emacs.d/elpa/snippets
+
+** If error occurs
+restart Emacs
