@@ -1,4 +1,4 @@
-* vanilla Emacs
+* Vanilla Emacs
 
 Usage:
 #+BEGIN_src sh
